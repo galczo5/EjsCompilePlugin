@@ -1,0 +1,21 @@
+{
+  "name": "ejscompileplugin",
+  "version": "1.0.0",
+  "description": "Simple compiler plugin for ejs files",
+  "main": "index.js",
+  "scripts": {
+    "webpack-3-build": "node ./node_modules/webpack-3/bin/webpack.js --config config/webpack-3.config.js",
+    "webpack-4-build": "node ./node_modules/webpack-4/bin/webpack.js --config config/webpack-4.config.js"
+  },
+  "author": "galczo5",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.0.1",
+    "webpack-3": "npm:webpack@^3.10.0",
+    "webpack-4": "npm:webpack@^4.41.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
