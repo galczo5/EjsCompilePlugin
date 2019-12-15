@@ -1,5 +1,6 @@
 const ejs = require('ejs');
 const fs = require('fs');
+const colors = require('colors');
 
 class EjsCompilePlugin {
 
@@ -9,6 +10,7 @@ class EjsCompilePlugin {
         this.properties = config && config.properties;
         this.compilerOptions = config && config.compilerOptions;
         this.webpackVersion = (config && config.webpackVersion) || 4;
+        this.stats = (config && config.stats) || false;
     }
 
     apply(compiler) {
@@ -22,11 +24,21 @@ class EjsCompilePlugin {
             return;
         }
 
-        console.log('--- EjsCompilePlugin - unknown version of webpack. Supported versions: 3, 4');
+        console.log('EjsCompilePlugin'.bold.red + ' - unknown version of webpack. Supported versions: 3, 4');
     }
 
     tap = (compilation, callback) => {
+        const desc = `EjsCompilePlugin`.bold.blue + ` - `+ `${this.template}`.bold;
+        if (this.stats) {
+            console.time(desc);
+        }
+
         this.compile().then(() => {
+
+            if (this.stats) {
+                console.timeEnd(desc);
+            }
+
             callback();
         });
     };
@@ -35,7 +47,7 @@ class EjsCompilePlugin {
         return new Promise((resolve, reject) => {
             ejs.renderFile(this.template, this.properties, this.compilerOptions, (compileError, str) => {
                 if (compileError) {
-                    console.error('--- EjsCompilePlugin - compilation error', compileError);
+                    console.error('EjsCompilePlugin'.bold.red + ' - error', compileError);
                     reject();
                 }
 
@@ -49,7 +61,7 @@ class EjsCompilePlugin {
         return new Promise((resolve, reject) => {
             fs.writeFile(this.filename, str, (saveError) => {
                 if (saveError) {
-                    console.error('--- EjsCompilePlugin - error', saveError);
+                    console.error('EjsCompilePlugin'.bold.red + ' - error', saveError);
                     reject();
                 }
 
