@@ -15,19 +15,19 @@ class EjsCompilePlugin {
 
     apply(compiler) {
         if (this.webpackVersion === 3) {
-            compiler.plugin('emit', this.tap);
+            compiler.plugin('emit', (compilation, callback) => this.tap(compilation, callback));
             return;
         }
 
         if (this.webpackVersion === 4) {
-            compiler.hooks.emit.tapAsync('EjsCompilePlugin', this.tap);
+            compiler.hooks.emit.tapAsync('EjsCompilePlugin', (compilation, callback) => this.tap(compilation, callback));
             return;
         }
 
         console.log('EjsCompilePlugin'.bold.red + ' - unknown version of webpack. Supported versions: 3, 4');
     }
 
-    tap = (compilation, callback) => {
+    tap(compilation, callback) {
         const desc = `EjsCompilePlugin`.bold.blue + ` - `+ `${this.template}`.bold;
         if (this.stats) {
             console.time(desc);
