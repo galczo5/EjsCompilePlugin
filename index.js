@@ -15,32 +15,27 @@ class EjsCompilePlugin {
 
     apply(compiler) {
         if (this.webpackVersion === 3) {
-            compiler.plugin('afterEmit', (compilation, callback) => this.tap(compilation, callback));
-            return;
-        }
-
-        if (this.webpackVersion === 4) {
+            compiler.plugin('after-emit', (compilation, callback) => this.tap(compilation, callback));
+        } else if (this.webpackVersion === 4) {
             compiler.hooks.afterEmit.tapAsync('EjsCompilePlugin', (compilation, callback) => this.tap(compilation, callback));
-            return;
+        } else {
+            console.log('EjsCompilePlugin'.bold.red + ' - unknown version of webpack. Supported versions: 3, 4');
         }
-
-        console.log('EjsCompilePlugin'.bold.red + ' - unknown version of webpack. Supported versions: 3, 4');
     }
 
     tap(compilation, callback) {
         const desc = `EjsCompilePlugin`.bold.blue + ` - `+ `${this.template}`.bold;
-        if (this.stats) {
-            console.time(desc);
-        }
+        if (this.stats) { console.time(desc); }
 
-        this.compile().then(() => {
-
-            if (this.stats) {
-                console.timeEnd(desc);
-            }
-
-            callback();
-        });
+        this.compile()
+            .then(() => {
+                if (this.stats) { console.timeEnd(desc); }
+                callback();
+            })
+            .catch(e => {
+                if (this.stats) { console.timeEnd(desc); }
+                console.error('EjsCompilePlugin'.bold.red + ' - error', e)
+            });
     };
 
     compile() {
@@ -48,11 +43,12 @@ class EjsCompilePlugin {
             ejs.renderFile(this.template, this.properties, this.compilerOptions, (compileError, str) => {
                 if (compileError) {
                     console.error('EjsCompilePlugin'.bold.red + ' - error', compileError);
-                    reject();
+                    reject(compileError);
                 }
 
                 this.saveResults(str)
-                    .then(() => resolve());
+                    .then(() => resolve())
+                    .catch(e => reject(e));
             });
         });
     }
@@ -62,7 +58,7 @@ class EjsCompilePlugin {
             fs.writeFile(this.filename, str, (saveError) => {
                 if (saveError) {
                     console.error('EjsCompilePlugin'.bold.red + ' - error', saveError);
-                    reject();
+                    reject(saveError);
                 }
 
                 resolve();
