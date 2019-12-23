@@ -1,6 +1,6 @@
 {
   "name": "ejscompileplugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Simple compiler plugin for ejs files",
   "main": "index.js",
   "scripts": {

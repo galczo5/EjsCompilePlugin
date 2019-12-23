@@ -15,12 +15,12 @@ class EjsCompilePlugin {
 
     apply(compiler) {
         if (this.webpackVersion === 3) {
-            compiler.plugin('emit', (compilation, callback) => this.tap(compilation, callback));
+            compiler.plugin('afterEmit', (compilation, callback) => this.tap(compilation, callback));
             return;
         }
 
         if (this.webpackVersion === 4) {
-            compiler.hooks.emit.tapAsync('EjsCompilePlugin', (compilation, callback) => this.tap(compilation, callback));
+            compiler.hooks.afterEmit.tapAsync('EjsCompilePlugin', (compilation, callback) => this.tap(compilation, callback));
             return;
         }
 
